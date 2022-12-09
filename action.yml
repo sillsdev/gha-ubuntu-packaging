@@ -1,0 +1,44 @@
+name: Ubuntu packaging
+description: Build binary .deb package
+
+branding:
+  color: orange
+  icon: package
+
+inputs:
+  dist:
+   description: 'The name of a Ubuntu version, either code name (e.g. jammy) or release (e.g. 22.04)'
+   required: true
+  platform:
+    description: 'The platform to build on. One of `amd64` or `386`. Defaults to `amd64`.'
+    required: false
+    default: 'amd64'
+  sourcepackage:
+    description: 'The name (and relative path) of the .dsc file'
+    required: true
+  source_dir:
+    description: 'The path to the directory that contains the .dsc file (relative to $GITHUB_WORKSPACE).'
+    required: false
+    default: '.'
+  result_dir:
+    description: 'The path to the directory where the built .deb files get copied to (relative to $GITHUB_WORKSPACE).'
+    required: false
+    default: 'artifacts'
+  enable_llso:
+    description: 'true to enable the llso package repo, otherwise false.'
+    required: false
+    default: 'true'
+  enable_pso:
+    description: 'true to enable the pso package repo, otherwise false.'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  entrypoint: '/build-package.sh'
+  args:
+    - "${{inputs.dist}}"
+    - "${{inputs.sourcepackage}}"
+    - "${{inputs.source_dir}}"
+    - "${{inputs.result_dir}}"
