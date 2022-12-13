@@ -32,6 +32,14 @@ inputs:
     description: 'true to enable the pso package repo, otherwise false.'
     required: false
     default: 'true'
+  deb_fullname:
+    description: 'Full name used for changelog entry'
+    required: false
+    default: 'SIL GHA Packager'
+  deb_email:
+    description: 'Email address used for changelog entry'
+    required: false
+    default: 'undelivered@sil.org'
 
 runs:
   using: 'docker'
@@ -42,3 +50,5 @@ runs:
     - "${{inputs.sourcepackage}}"
     - "${{inputs.source_dir}}"
     - "${{inputs.result_dir}}"
+    - "${{inputs.deb_fullname}}"
+    - "${{inputs.deb_email}}"

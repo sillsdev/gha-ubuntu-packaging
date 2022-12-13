@@ -2,25 +2,28 @@
 
 set -eu
 
-if (( $# < 2 )); then
+if (( $# < 6 )); then
 	echo "Missing parameter!"
-	echo "Usage: $0 <dist> <.dsc file> [<source_dir> [<result_dir> [<build_dir>]]]"
+	echo "Usage: $0 <dist> <.dsc file> <source_dir> <result_dir> <debfullname> <debemail>"
 	exit 1
 fi
 
-# Process parameters
 WORK_DIR="$(pwd)"
+BUILD_DIR=/build
+
+# Process parameters
 DIST=$1
 DSC=$2
-SOURCE_DIR=${3:-.}
-RESULT_DIR=$WORK_DIR/${4:-$SOURCE_DIR/artifacts}
-BUILD_DIR=${5:-/build}
+SOURCE_DIR=$WORK_DIR/$3
+RESULT_DIR=$WORK_DIR/$4
+DEBFULLNAME=$5
+DEBEMAIL=$6
 
-export DEBFULLNAME="SIL GHA Packager"
-export DEBEMAIL="undelivered@sil.org"
+export DEBFULLNAME
+export DEBEMAIL
 
 # Extract source
-cd "$WORK_DIR/$SOURCE_DIR"
+cd "$SOURCE_DIR"
 echo "Extracting source"
 dpkg-source --extract "$DSC" "$BUILD_DIR"
 

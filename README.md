@@ -33,13 +33,21 @@ Defaults to `${source_dir}/artifacts`.
 
 #### `enable_llso`
 
-`true` to enable the llso package repo (http://linux.lsdev.sil.org),
+`true` to enable the llso package repo (<http://linux.lsdev.sil.org>),
 otherwise `false`. Defaults to `true`.
 
 #### `enable_pso`
 
-`true` to enable the pso package repo (http://packages.sil.org),
+`true` to enable the pso package repo (<http://packages.sil.org>),
 otherwise `false`. Defaults to `true`.
+
+#### `deb_fullname`
+
+The full name used for the changelog entry. Defaults to `SIL GHA Packager`.
+
+#### `deb_email`
+
+The email address used for the changelog entry. Defaults to `undelivered@sil.org`.
 
 ### Example usage
 
