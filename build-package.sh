@@ -2,12 +2,6 @@
 
 set -eu
 
-if (( $# < 6 )); then
-	echo "Missing parameter!"
-	echo "Usage: $0 <dist> <.dsc file> <source_dir> <result_dir> <debfullname> <debemail>"
-	exit 1
-fi
-
 WORK_DIR="$(pwd)"
 BUILD_DIR=/build
 
@@ -18,6 +12,7 @@ SOURCE_DIR=$WORK_DIR/$3
 RESULT_DIR=$WORK_DIR/$4
 DEBFULLNAME=$5
 DEBEMAIL=$6
+PRERELEASE_TAG=$7
 
 export DEBFULLNAME
 export DEBEMAIL
@@ -35,7 +30,7 @@ mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-in
 
 # Build binary package
 echo "Updating version"
-dch --local "+${DIST}" --distribution "$DIST" ""
+dch --local "${PRERELEASE_TAG}+${DIST}" --distribution "$DIST" ""
 
 echo "Creating binary package"
 dpkg-buildpackage --build=any,all --unsigned-source --unsigned-changes

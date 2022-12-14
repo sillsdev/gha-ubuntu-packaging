@@ -40,6 +40,10 @@ inputs:
     description: 'Email address used for changelog entry'
     required: false
     default: 'undelivered@sil.org'
+  prerelease_tag:
+    description: 'A pre-release tag to add to the version number'
+    required: false
+    default: ''
 
 runs:
   using: 'docker'
@@ -52,3 +56,4 @@ runs:
     - "${{inputs.result_dir}}"
     - "${{inputs.deb_fullname}}"
     - "${{inputs.deb_email}}"
+    - "${{inputs.prerelease_tag}}"
