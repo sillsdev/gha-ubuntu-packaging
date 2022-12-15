@@ -52,7 +52,7 @@ The email address used for the changelog entry. Defaults to `undelivered@sil.org
 #### `prerelease_tag`
 
 A pre-release tag to add to the version number. This tag can include the
-`GITHUB_RUN_NUMBER` and `GITHUB_RUN_ATTEMPT`, e.g. `PR-1234-1.1`.
+`GITHUB_RUN_NUMBER` and `GITHUB_RUN_ATTEMPT`, e.g. `~PR-1234-1.1`.
 
 ### Example usage
 
@@ -65,6 +65,8 @@ steps:
       sourcepackage: ${{sourcepackage}}
 ...
 ```
+
+See [PACKAGING.md](PACKAGING.md) for a detailed example.
 
 ## Manual package builds in a Docker container
 

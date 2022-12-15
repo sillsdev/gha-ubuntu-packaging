@@ -10,7 +10,7 @@ inputs:
    description: 'The name of a Ubuntu version, either code name (e.g. jammy) or release (e.g. 22.04)'
    required: true
   platform:
-    description: 'The platform to build on. One of `amd64` or `386`. Defaults to `amd64`.'
+    description: 'The platform to build on. One of `amd64` or `i386`. Defaults to `amd64`.'
     required: false
     default: 'amd64'
   sourcepackage:
