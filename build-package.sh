@@ -17,28 +17,45 @@ PRERELEASE_TAG=$7
 export DEBFULLNAME
 export DEBEMAIL
 
+COLOR_GREEN='\e[0;32m'
+
+startgroup()
+{
+    echo -e "::group::${COLOR_GREEN}$1"
+}
+
+endgroup()
+{
+    echo "::endgroup::"
+}
+
 # Extract source
 cd "$SOURCE_DIR"
-echo "Extracting source"
+startgroup "Extracting source"
 dpkg-source --extract "$DSC" "$BUILD_DIR"
+endgroup
 
 # Install build dependencies
 cd "$BUILD_DIR"
 apt update
-echo "Installing build dependencies"
+startgroup "Installing build dependencies"
 mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
+endgroup
 
 # Build binary package
-echo "Updating version"
+startgroup "Updating version"
 dch --local "${PRERELEASE_TAG}+${DIST}" --distribution "$DIST" ""
+endgroup
 
-echo "Creating binary package"
+startgroup "Creating binary package"
 dpkg-buildpackage --build=any,all --unsigned-source --unsigned-changes
+endgroup
 
-echo "Copying artifacts"
+startgroup "Copying artifacts"
 cd ..
 mkdir -p "$RESULT_DIR"
 cp ./*.deb "$RESULT_DIR"
 cp ./*.ddeb "$RESULT_DIR"
 cp ./*.changes "$RESULT_DIR"
 cp ./*.buildinfo "$RESULT_DIR"
+endgroup
