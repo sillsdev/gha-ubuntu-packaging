@@ -54,8 +54,8 @@ endgroup
 startgroup "Copying artifacts"
 cd ..
 mkdir -p "$RESULT_DIR"
-cp ./*.deb "$RESULT_DIR"
-cp ./*.ddeb "$RESULT_DIR"
-cp ./*.changes "$RESULT_DIR"
-cp ./*.buildinfo "$RESULT_DIR"
+cp ./*.deb "$RESULT_DIR" || true
+cp ./*.ddeb "$RESULT_DIR" || true
+cp ./*.changes "$RESULT_DIR" || true
+cp ./*.buildinfo "$RESULT_DIR" || true
 endgroup
