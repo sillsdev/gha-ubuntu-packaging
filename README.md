@@ -75,7 +75,7 @@ a docker container.
 
 This can either be done by building a docker image and then running
 the `build-package.sh` script inside the docker container, or by using
-`local-build.sh` which encapsulates these two steps.
+`local-build.sh` which combines these two steps.
 
 ### Using `local-build.sh`
 
