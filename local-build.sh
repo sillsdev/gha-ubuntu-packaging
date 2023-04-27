@@ -19,9 +19,9 @@ fi
 
 DIST="$1"
 DSC="$(basename "$2")"
-DSC_DIR="$(dirname "$2")"
+DSC_DIR="$(readlink -f "$(dirname "$2")")"
 
-SCRIPT_DIR=$(dirname "$0")
+SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
 IMAGE_NAME="sillsdev/${DIST}"
 
 cd "$SCRIPT_DIR" || exit
@@ -33,7 +33,7 @@ if [ -z "$IMAGE_ID" ]; then
   docker build --build-arg DIST="${DIST}" --build-arg PLATFORM=amd64 -t "${IMAGE_NAME}" .
 fi
 
-echo -e "\e[0;35mBuilding binary image for ${DIST}\e[0m"
 cd "${DSC_DIR}" || exit
+echo -e "\e[0;35mBuilding binary image for ${DIST}\e[0m"
 docker run -v "$(pwd)":/source -i -t -w /source --platform=linux/amd64 \
     "${IMAGE_NAME}" "${DIST}" "${DSC}" .
