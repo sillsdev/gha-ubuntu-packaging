@@ -73,7 +73,22 @@ See [PACKAGING.md](PACKAGING.md) for a detailed example.
 The files in this directory also allow to manually build a package in
 a docker container.
 
-### 1. Build image
+This can either be done by building a docker image and then running
+the `build-package.sh` script inside the docker container, or by using
+`local-build.sh` which encapsulates these two steps.
+
+### Using `local-build.sh`
+
+`local-build.sh` takes two mandatory parameters: the Ubuntu version, and
+the path and name of the .dsc file to build.
+
+```bash
+./local-build.sh jammy ~/ibus/packages/ibus_1.5.26-4sil1.1~jammy.dsc
+```
+
+### Building Docker image and running `build-package.sh`
+
+#### 1. Build image
 
 ```bash
 docker build --build-arg DIST=jammy --build-arg PLATFORM=amd64 -t sillsdev/jammy .
@@ -82,13 +97,13 @@ docker build --build-arg DIST=jammy --build-arg PLATFORM=amd64 -t sillsdev/jammy
 `jammy` and `amd64` are the Ubuntu version and platform for which to build the
 package.
 
-### 2. Build binary package
+#### 2. Build binary package
 
 Change into the directory which contains the source package, then run:
 
 ```bash
 docker run -v $(pwd):/source -i -t -w /source --platform=linux/amd64 \
-    sillsdev/jammy ibus_1.5.26-4sil1.1~jammy.dsc /source
+    sillsdev/jammy jammy ibus_1.5.26-4sil1.1~jammy.dsc .
 ```
 
 `ibus_1.5.26-4sil1.1~jammy.dsc` is the name of the source package. The
