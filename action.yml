@@ -6,6 +6,10 @@ branding:
   icon: package
 
 inputs:
+  flavor:
+    description: 'The name of the distribution, i.e. Ubuntu or Debian. Defaults to `ubuntu`.'
+    required: false
+    default: 'ubuntu'
   dist:
    description: 'The name of a Ubuntu version, either code name (e.g. jammy) or release (e.g. 22.04)'
    required: true
@@ -44,6 +48,9 @@ inputs:
     description: 'A pre-release tag to add to the version number'
     required: false
     default: ''
+  github_token:
+    description: 'The GitHub token secret for the password. You can pass the automatically generated GITHUB_TOKEN secret.'
+    required: true
 
 runs:
   using: 'docker'
@@ -57,3 +64,61 @@ runs:
     - "${{inputs.deb_fullname}}"
     - "${{inputs.deb_email}}"
     - "${{inputs.prerelease_tag}}"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Verify input
+      shell: bash
+      run: |
+        if [ "${{inputs.flavor}}" == "ubuntu" ] && [ "${{inputs.platform}}" == "i386" ]; then
+          echo "::error::Platform i386 is not supported for Ubuntu"
+          exit 1
+        fi
+
+    - name: Checkout
+      uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@ecf95283f03858871ff00b787d79c419715afc34 # v2.7.0
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github_token }}
+
+    - name: Build Docker image
+      uses: docker/build-push-action@2eb1c1961a95fc15694676618e422e8ba1d63825 # v4.1.1
+      with:
+        context: ${{github.action_path}}
+        tags: ghcr.io/${{github.actor}}/sil-${{inputs.flavor}}-${{inputs.dist}}-${{inputs.platform}}-${{inputs.enable_pso}}-${{inputs.enable_llso}}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        outputs: type=image
+        push: true
+        platforms: linux/${{inputs.platform}}
+        build-args: |
+          DIST=${{inputs.dist}}
+          DISTRIBUTION=${{inputs.flavor}}
+          PLATFORM=${{inputs.platform}}
+          ENABLE_LLSO=${{inputs.enable_llso}}
+          ENABLE_PSO=${{inputs.enable_pso}}
+
+    - name: Build package
+      shell: bash
+      run: docker run -v "/var/run/docker.sock":"/var/run/docker.sock" -v "${{inputs.source_dir}}":/source --env INPUT_DISTRIBUTION --env INPUT_DIST --env INPUT_PLATFORM --env INPUT_SOURCEPACKAGE --env INPUT_SOURCE_DIR --env INPUT_RESULT_DIR --env INPUT_ENABLE_LLSO --env INPUT_ENABLE_PSO --env INPUT_DEB_FULLNAME --env INPUT_DEB_EMAIL --env INPUT_PRERELEASE_TAG --workdir /source --platform="linux/${{inputs.platform}}" "ghcr.io/${{github.actor}}/sil-${{inputs.flavor}}-${{inputs.dist}}-${{inputs.platform}}-${{inputs.enable_pso}}-${{inputs.enable_llso}}" "${{inputs.dist}}" "${{inputs.sourcepackage}}" .
+      working-directory: ${{inputs.source_dir}}
+      env:
+        INPUT_DISTRIBUTION: "${{inputs.flavor}}"
+        INPUT_DIST: "${{inputs.dist}}"
+        INPUT_PLATFORM: "${{inputs.platform}}"
+        INPUT_SOURCEPACKAGE: "${{inputs.sourcepackage}}"
+        INPUT_SOURCE_DIR: "${{inputs.source_dir}}"
+        INPUT_RESULT_DIR: "${{inputs.result_dir}}"
+        INPUT_ENABLE_LLSO: "${{inputs.enable_llso}}"
+        INPUT_ENABLE_PSO: "${{inputs.enable_pso}}"
+        INPUT_DEB_FULLNAME: "${{inputs.deb_fullname}}"
+        INPUT_DEB_EMAIL: "${{inputs.deb_email}}"
+        INPUT_PRERELEASE_TAG: "${{inputs.prerelease_tag}}"

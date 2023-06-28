@@ -6,6 +6,14 @@ A GitHub action to build Ubuntu packages.
 
 ### Inputs
 
+#### `github_token`
+
+**Required** The GitHub token used to cache the image by uploading to ghcr.io.
+
+#### `flavor`
+
+The name of the distribution, i.e. Ubuntu or Debian. Defaults to `ubuntu`.
+
 #### `dist`
 
 **Required** The name of a Ubuntu version, either code name (e.g. `jammy`)
