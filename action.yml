@@ -53,19 +53,6 @@ inputs:
     required: true
 
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  entrypoint: '/build-package.sh'
-  args:
-    - "${{inputs.dist}}"
-    - "${{inputs.sourcepackage}}"
-    - "${{inputs.source_dir}}"
-    - "${{inputs.result_dir}}"
-    - "${{inputs.deb_fullname}}"
-    - "${{inputs.deb_email}}"
-    - "${{inputs.prerelease_tag}}"
-
-runs:
   using: 'composite'
   steps:
     - name: Verify input
