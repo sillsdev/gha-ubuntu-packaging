@@ -6,11 +6,6 @@ A GitHub action to build Ubuntu packages.
 
 ### Inputs
 
-#### `github_token`
-
-**Required** The GitHub token used to cache the image by uploading to
-ghcr.io. It's easiest to pass `secrets.GITHUB_TOKEN`.
-
 #### `flavor`
 
 The name of the distribution, i.e. Ubuntu or Debian. Defaults to `ubuntu`.
@@ -70,7 +65,6 @@ A pre-release tag to add to the version number. This tag can include the
 steps:
   - uses: sillsdev/gha-ubuntu-packaging@v1
     with:
-      github_token: "${{secrets.GITHUB_TOKEN}}"
       dist: 'jammy'
       sourcepackage: ${{sourcepackage}}
 ...
