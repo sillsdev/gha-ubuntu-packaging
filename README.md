@@ -27,13 +27,13 @@ leading `linux/`). Defaults to `amd64`.
 
 #### `source_dir`
 
-The path to the directory that contains the .dsc file. Defaults to
-the current directory (`.`).
+The absolute path to the directory that contains the .dsc file. Defaults to
+the current directory (`$GITHUB_WORKSPACE`).
 
 #### `result_dir`
 
-The path to the directory where the built .deb files get copied to.
-Defaults to `${source_dir}/artifacts`.
+The path to the directory where the built .deb files get copied to, relative
+to `$source_dir`. Defaults to `artifacts`.
 
 #### `enable_llso`
 

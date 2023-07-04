@@ -60,11 +60,11 @@ Keyman [deb-packaging workflow](https://github.com/keymanapp/keyman/blob/master/
         path: artifacts
 
     - name: Build
-      uses: sillsdev/gha-ubuntu-packaging@v0.4
+      uses: sillsdev/gha-ubuntu-packaging@v0.7
       with:
         dist: "${{ matrix.dist }}"
         platform: "${{ matrix.arch }}"
-        source_dir: "artifacts/my-srcpkg"
+        source_dir: "${{github.workspace}}/artifacts/my-srcpkg"
         sourcepackage: "my${{ needs.sourcepackage.outputs.VERSION }}-1.dsc"
         prerelease_tag: ${{ needs.sourcepackage.outputs.PRERELEASE_TAG }}
 

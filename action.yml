@@ -21,11 +21,11 @@ inputs:
     description: 'The name (and relative path) of the .dsc file'
     required: true
   source_dir:
-    description: 'The path to the directory that contains the .dsc file (relative to $GITHUB_WORKSPACE).'
+    description: 'The absolute path to the directory that contains the .dsc file. Defaults to $GITHUB_WORKSPACE'
     required: false
-    default: '.'
+    default: '${{github.workspace}}'
   result_dir:
-    description: 'The path to the directory where the built .deb files get copied to (relative to $GITHUB_WORKSPACE).'
+    description: 'The path to the directory where the built .deb files get copied to (relative to $source_dir; defaults to artifacts).'
     required: false
     default: 'artifacts'
   enable_llso:
@@ -82,7 +82,7 @@ runs:
 
     - name: Build package
       shell: bash
-      run: docker run --platform="${{inputs.platform}}" -v "/var/run/docker.sock":"/var/run/docker.sock" -v "${{inputs.source_dir}}":/source --env INPUT_DISTRIBUTION --env INPUT_DIST --env INPUT_PLATFORM --env INPUT_SOURCEPACKAGE --env INPUT_SOURCE_DIR --env INPUT_RESULT_DIR --env INPUT_ENABLE_LLSO --env INPUT_ENABLE_PSO --env INPUT_DEB_FULLNAME --env INPUT_DEB_EMAIL --env INPUT_PRERELEASE_TAG --workdir /source "${IMAGE_NAME}" "${{inputs.dist}}" "${{inputs.sourcepackage}}" .
+      run: docker run --platform="${{inputs.platform}}" -v "/var/run/docker.sock":"/var/run/docker.sock" -v "${{inputs.source_dir}}":/source --env INPUT_DISTRIBUTION --env INPUT_DIST --env INPUT_PLATFORM --env INPUT_SOURCEPACKAGE --env INPUT_SOURCE_DIR --env INPUT_RESULT_DIR --env INPUT_ENABLE_LLSO --env INPUT_ENABLE_PSO --env INPUT_DEB_FULLNAME --env INPUT_DEB_EMAIL --env INPUT_PRERELEASE_TAG --workdir /source "${IMAGE_NAME}"
       working-directory: ${{inputs.source_dir}}
       env:
         INPUT_DISTRIBUTION: "${{inputs.flavor}}"

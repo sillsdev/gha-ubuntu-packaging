@@ -6,7 +6,7 @@ show_usage()
   echo "Usage:   $0 DIST DSC"
   echo ""
   echo "Example: ./local-build.sh jammy path/to/ibus_1.5.28-3sil1~jammy.dsc"
-  exit "$1"
+  exit 1
 }
 
 if [ "$1" == "--help" ]; then
@@ -22,7 +22,7 @@ DSC="$(basename "$2")"
 DSC_DIR="$(readlink -f "$(dirname "$2")")"
 
 SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
-IMAGE_NAME="sillsdev/${DIST}"
+IMAGE_NAME="sillsdev/sil-ubuntu-${DIST}-amd64-true-true"
 
 cd "$SCRIPT_DIR" || exit
 
@@ -35,5 +35,5 @@ fi
 
 cd "${DSC_DIR}" || exit
 echo -e "\e[0;35mBuilding binary image for ${DIST}\e[0m"
-docker run -v "$(pwd)":/source --env INPUT_DISTRIBUTION=ubuntu --env INPUT_DIST="$DIST" --env INPUT_PLATFORM=amd64 --env INPUT_SOURCEPACKAGE="${DSC}" --env INPUT_SOURCE_DIR=. --env INPUT_RESULT_DIR --env INPUT_ENABLE_LLSO --env INPUT_ENABLE_PSO --env INPUT_DEB_FULLNAME --env INPUT_DEB_EMAIL --env INPUT_PRERELEASE_TAG -i -t -w /source --platform=linux/amd64 \
+docker run -v "$(pwd)":/source --env INPUT_DISTRIBUTION=ubuntu --env INPUT_DIST="$DIST" --env INPUT_PLATFORM=amd64 --env INPUT_SOURCEPACKAGE="${DSC}" --env INPUT_SOURCE_DIR="$(pwd)" --env INPUT_RESULT_DIR --env INPUT_ENABLE_LLSO --env INPUT_ENABLE_PSO --env INPUT_DEB_FULLNAME --env INPUT_DEB_EMAIL --env INPUT_PRERELEASE_TAG -i -t -w /source --platform=linux/amd64 \
     "${IMAGE_NAME}"

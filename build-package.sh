@@ -2,13 +2,12 @@
 
 set -eu
 
-WORK_DIR="$(pwd)"
+SOURCE_DIR=/source
 BUILD_DIR=/build
 
 DIST=${INPUT_DIST}
-DSC=${INPUT_SOURCEPACKAGE}
-SOURCE_DIR=$WORK_DIR/${INPUT_SOURCE_DIR:-}
-RESULT_DIR=$WORK_DIR/${INPUT_RESULT_DIR:-artifacts}
+DSC=${INPUT_SOURCEPACKAGE:-}
+RESULT_DIR=${INPUT_RESULT_DIR:-artifacts}
 DEBFULLNAME=${INPUT_DEB_FULLNAME:-SIL GHA Packager}
 DEBEMAIL=${INPUT_DEB_EMAIL:-undelivered@sil.org}
 PRERELEASE_TAG=${INPUT_PRERELEASE_TAG:-}
@@ -35,7 +34,7 @@ dpkg-source --extract "$DSC" "$BUILD_DIR"
 endgroup
 
 # Install build dependencies
-cd "$BUILD_DIR"
+pushd "$BUILD_DIR"
 apt update
 startgroup "Installing build dependencies"
 mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
@@ -51,7 +50,7 @@ dpkg-buildpackage --build=any,all --unsigned-source --unsigned-changes
 endgroup
 
 startgroup "Copying artifacts"
-cd ..
+popd
 mkdir -p "$RESULT_DIR"
 cp ./*.deb "$RESULT_DIR" || true
 cp ./*.ddeb "$RESULT_DIR" || true
