@@ -2,12 +2,13 @@
 
 set -eu
 
-SOURCE_DIR=/source
+WORK_DIR=$(pwd)
 BUILD_DIR=/build
 
 DIST=${INPUT_DIST}
 DSC=${INPUT_SOURCEPACKAGE:-}
-RESULT_DIR=${INPUT_RESULT_DIR:-artifacts}
+SOURCE_DIR=${WORK_DIR}/${INPUT_SOURCE_DIR}
+RESULT_DIR=${WORK_DIR}/${INPUT_RESULT_DIR:-artifacts}
 DEBFULLNAME=${INPUT_DEB_FULLNAME:-SIL GHA Packager}
 DEBEMAIL=${INPUT_DEB_EMAIL:-undelivered@sil.org}
 PRERELEASE_TAG=${INPUT_PRERELEASE_TAG:-}
@@ -50,7 +51,7 @@ dpkg-buildpackage --build=any,all --unsigned-source --unsigned-changes
 endgroup
 
 startgroup "Copying artifacts"
-popd
+cd ..
 mkdir -p "$RESULT_DIR"
 cp ./*.deb "$RESULT_DIR" || true
 cp ./*.ddeb "$RESULT_DIR" || true
