@@ -43,7 +43,7 @@ endgroup
 
 # Build binary package
 startgroup "Updating version"
-dch --local "${PRERELEASE_TAG}+${DIST}" --distribution "$DIST" ""
+dch --local "${PRERELEASE_TAG}+${DIST}" --distribution "$DIST" "Release to ${DIST}"
 endgroup
 
 startgroup "Creating binary package"
