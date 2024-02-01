@@ -92,13 +92,12 @@ Keyman [deb-packaging workflow](https://github.com/keymanapp/keyman/blob/master/
 
     steps:
       - name: Sign packages
-        uses: sillsdev/gha-deb-signing@c035bafb5cd334191b6943d063743a619750b016 # v0.1
+        uses: sillsdev/gha-deb-signing@a38dbde6bc9afabede5e07609105acc83c760ad4 # v0.6
         with:
-          src-pkg-path: "artifacts/my-srcpkg"
           src-pkg-name: "my${{ needs.sourcepackage.outputs.VERSION }}-1_source.changes"
-          bin-pkg-path: "artifacts/my-binarypkgs"
           bin-pkg-name: "my${{ needs.sourcepackage.outputs.VERSION }}-1${{ needs.sourcepackage.outputs.PRERELEASE_TAG }}+"
-          artifacts-name: "my-signedpkgs"
+          artifacts-prefix: "my-"
+          artifacts-result-name: "my-signedpkgs"
           gpg-signing-key: "${{ secrets.GPG_SIGNING_KEY }}"
           debsign-keyid: "${{ secrets.DEBSIGN_KEYID }}"
   ```
