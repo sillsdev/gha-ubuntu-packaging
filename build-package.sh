@@ -17,10 +17,11 @@ export DEBFULLNAME
 export DEBEMAIL
 
 COLOR_GREEN='\e[0;32m'
+COLOR_RESET='\x1b(B\x1b[m'
 
 startgroup()
 {
-    echo -e "::group::${COLOR_GREEN}$1"
+    echo -e "::group::${COLOR_GREEN}$1${COLOR_RESET}"
 }
 
 endgroup()
