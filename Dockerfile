@@ -6,6 +6,17 @@ ARG ENABLE_LLSO=true
 ARG ENABLE_PSO=true
 FROM --platform=linux/${PLATFORM} ${DISTRIBUTION}:${DIST}
 
+# set the environment variables that gha sets
+ENV INPUT_DISTRIBUTION="${DISTRIBUTION}"
+ENV INPUT_DIST="${DIST}"
+ENV INPUT_PLATFORM="${PLATFORM}"
+ENV INPUT_RESULT_DIR="artifacts"
+ENV INPUT_ENABLE_LLSO="${ENABLE_LLSO}"
+ENV INPUT_ENABLE_PSO="${ENABLE_PSO}"
+ENV INPUT_DEB_FULLNAME="SIL GHA Packager"
+ENV INPUT_DEB_EMAIL="undelivered@sil.org"
+ENV INPUT_PRERELEASE_TAG=""
+
 # see https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
 ARG ENABLE_LLSO
 ARG ENABLE_PSO
