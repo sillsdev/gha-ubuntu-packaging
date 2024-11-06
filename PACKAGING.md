@@ -55,9 +55,10 @@ Keyman [deb-packaging workflow](https://github.com/keymanapp/keyman/blob/master/
     runs-on: ubuntu-latest
     steps:
     - name: Download Artifacts
-      uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # v3.0.0
+      uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
       with:
         path: artifacts
+        merge-multiple: true
 
     - name: Build
       uses: sillsdev/gha-ubuntu-packaging@v0.9
@@ -69,9 +70,9 @@ Keyman [deb-packaging workflow](https://github.com/keymanapp/keyman/blob/master/
         prerelease_tag: ${{ needs.sourcepackage.outputs.PRERELEASE_TAG }}
 
     - name: Store binary packages
-      uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # v3.1.0
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
       with:
-        name: my-binarypkgs
+        name: my-binarypkgs-${{ matrix.runs-on }}
         path: |
           artifacts/*
           !artifacts/my-srcpkg/
