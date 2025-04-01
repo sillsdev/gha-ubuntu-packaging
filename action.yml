@@ -17,33 +17,21 @@ inputs:
     description: 'The platform to build on. One of `amd64` or `i386`. Defaults to `amd64`.'
     required: false
     default: 'amd64'
-  sourcepackage:
-    description: 'The name (and relative path) of the .dsc file'
+  build_script:
+    description: 'an alternate build script to use.  Use `/source` as the root of your repo'
     required: true
-  source_dir:
-    description: 'The path to the directory that contains the .dsc file, relative to `$GITHUB_WORKSPACE`. Defaults to `.`.'
-    required: false
-    default: '.'
   result_dir:
-    description: 'The path to the directory where the built .deb files get copied to, relative to `$GITHUB_WORKSPACE`. Defaults to `artifacts`.'
+    description: 'The path should be relative to your workspace'
     required: false
     default: 'artifacts'
-  enable_llso:
-    description: 'true to enable the llso package repo, otherwise false.'
-    required: false
-    default: 'true'
-  enable_pso:
-    description: 'true to enable the pso package repo, otherwise false.'
-    required: false
-    default: 'true'
   deb_fullname:
     description: 'Full name used for changelog entry'
     required: false
-    default: 'SIL GHA Packager'
+    default: 'icann-dns GHA Packager'
   deb_email:
     description: 'Email address used for changelog entry'
     required: false
-    default: 'undelivered@sil.org'
+    default: 'noc@dns.icann.org'
   prerelease_tag:
     description: 'A pre-release tag to add to the version number'
     required: false
@@ -67,7 +55,7 @@ runs:
       uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
       with:
         context: ${{github.action_path}}
-        tags: ${{github.actor}}/sil-${{inputs.flavor}}-${{inputs.dist}}-${{inputs.platform}}-${{inputs.enable_pso}}-${{inputs.enable_llso}}
+        tags: ${{github.actor}}/icann-dns-${{inputs.flavor}}-${{inputs.dist}}-${{inputs.platform}}
         cache-from: type=gha
         cache-to: type=gha
         outputs: type=docker
@@ -77,31 +65,18 @@ runs:
           DIST=${{inputs.dist}}
           DISTRIBUTION=${{inputs.flavor}}
           PLATFORM=${{inputs.platform}}
-          ENABLE_LLSO=${{inputs.enable_llso}}
-          ENABLE_PSO=${{inputs.enable_pso}}
 
     - name: Build package
       shell: bash
       run: |
-        SOURCE_DIR="$(readlink -f "${{inputs.source_dir}}")"
-        DSC_DIR=$(realpath --relative-to="${{github.workspace}}" "${SOURCE_DIR}")
-
-        if [[ "$SOURCE_DIR" != "${{github.workspace}}"* ]]; then
-          echo "::error::`source_dir` (${INPUTS_SOURCE_DIR}) has to be a subdirectory of the current workdir!"
-          exit 2
-        fi
-        docker run --platform="${{inputs.platform}}" -v "/var/run/docker.sock":"/var/run/docker.sock" -v "${{github.workspace}}":/source --env INPUT_DISTRIBUTION --env INPUT_DIST --env INPUT_PLATFORM --env INPUT_SOURCEPACKAGE --env INPUT_SOURCE_DIR=${DSC_DIR} --env INPUT_RESULT_DIR --env INPUT_ENABLE_LLSO --env INPUT_ENABLE_PSO --env INPUT_DEB_FULLNAME --env INPUT_DEB_EMAIL --env INPUT_PRERELEASE_TAG --workdir /source "${IMAGE_NAME}"
+        docker run --entrypoint="/source/${{inputs.build_script}}" \
+          --platform="${{inputs.platform}}" \
+          -v "/var/run/docker.sock":"/var/run/docker.sock" \
+          -v "${{github.workspace}}":/source \
+          -e DEBEMAIL -e DEB_FULLNAME -e GITHUB_REF_NAME \
+          --workdir /source "${IMAGE_NAME}"
       working-directory: ${{github.workspace}}
       env:
-        INPUT_DISTRIBUTION: "${{inputs.flavor}}"
-        INPUT_DIST: "${{inputs.dist}}"
-        INPUT_PLATFORM: "${{inputs.platform}}"
-        INPUT_SOURCEPACKAGE: "${{inputs.sourcepackage}}"
-        INPUT_SOURCE_DIR: "${{inputs.source_dir}}"
-        INPUT_RESULT_DIR: "${{inputs.result_dir}}"
-        INPUT_ENABLE_LLSO: "${{inputs.enable_llso}}"
-        INPUT_ENABLE_PSO: "${{inputs.enable_pso}}"
-        INPUT_DEB_FULLNAME: "${{inputs.deb_fullname}}"
-        INPUT_DEB_EMAIL: "${{inputs.deb_email}}"
-        INPUT_PRERELEASE_TAG: "${{inputs.prerelease_tag}}"
-        IMAGE_NAME: "${{github.actor}}/sil-${{inputs.flavor}}-${{inputs.dist}}-${{inputs.platform}}-${{inputs.enable_pso}}-${{inputs.enable_llso}}"
+        DEB_FULLNAME: "${{inputs.deb_fullname}}"
+        DEBEMAIL: "${{inputs.deb_email}}"
+        IMAGE_NAME: "${{github.actor}}/icann-dns-${{inputs.flavor}}-${{inputs.dist}}-${{inputs.platform}}"

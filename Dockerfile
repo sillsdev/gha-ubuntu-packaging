@@ -2,46 +2,25 @@
 ARG DIST=latest
 ARG DISTRIBUTION=ubuntu
 ARG PLATFORM=amd64
-ARG ENABLE_LLSO=true
-ARG ENABLE_PSO=true
 FROM --platform=linux/${PLATFORM} ${DISTRIBUTION}:${DIST}
-
-# set the environment variables that gha sets
-ENV INPUT_DISTRIBUTION="${DISTRIBUTION}"
-ENV INPUT_DIST="${DIST}"
-ENV INPUT_PLATFORM="${PLATFORM}"
-ENV INPUT_RESULT_DIR="artifacts"
-ENV INPUT_ENABLE_LLSO="${ENABLE_LLSO}"
-ENV INPUT_ENABLE_PSO="${ENABLE_PSO}"
-ENV INPUT_DEB_FULLNAME="SIL GHA Packager"
-ENV INPUT_DEB_EMAIL="undelivered@sil.org"
-ENV INPUT_PRERELEASE_TAG=""
-
-# see https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
-ARG ENABLE_LLSO
-ARG ENABLE_PSO
-
 # Set the env variables to non-interactive
-ENV DEBIAN_FRONTEND noninteractive
-ENV DEBIAN_PRIORITY critical
-ENV DEBCONF_NOWARNINGS yes
-
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_PRIORITY=critical
+ENV DEBCONF_NOWARNINGS=yes
 # Installing the build environment
 RUN apt-get update && \
-  apt-get install -y build-essential devscripts equivs quilt dh-make automake wget software-properties-common
+  apt-get install -y build-essential devscripts equivs quilt dh-make automake wget software-properties-common python3-setuptools debhelper dpkg-dev python3-dev python3-pip sudo
 
-# NOTE: Directly specifying the repository in `add-apt-repository` is deprecated
-# with add-apt-repository 0.99.x. The parameter `--sourceslist` should be used instead.
-# However, Focal still comes with version 0.98 which doesn't support that parameter,
-# so we stick with the deprecated line for now.
-RUN wget -qO - http://linux.lsdev.sil.org/downloads/sil-testing.gpg > /etc/apt/trusted.gpg.d/linux-lsdev-sil-org.asc ; \
-  wget -qO - https://packages.sil.org/keys/pso-keyring-2016.gpg > /etc/apt/trusted.gpg.d/pso-keyring-2016.gpg ; \
-  ${ENABLE_LLSO} && add-apt-repository --yes --no-update "deb http://linux.lsdev.sil.org/ubuntu $(lsb_release -sc) main" ; \
-  ${ENABLE_LLSO} && add-apt-repository --yes --no-update "deb http://linux.lsdev.sil.org/ubuntu $(lsb_release -sc)-experimental main" ; \
-  ${ENABLE_PSO} && add-apt-repository --yes --no-update "deb http://packages.sil.org/ubuntu $(lsb_release -sc) main" ; \
-  ${ENABLE_PSO} && add-apt-repository --yes --no-update "deb http://packages.sil.org/ubuntu $(lsb_release -sc)-experimental main" ; \
-  apt-get update
+RUN useradd -ms /bin/bash -G sudo docker && mkdir /source && chown docker /source
 
-COPY build-package.sh /build-package.sh
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-ENTRYPOINT ["/build-package.sh"]
+USER docker
+
+# set the environment variables that gha sets
+ENV DEB_FULLNAME="ICANN-DNS GHA Packager"
+ENV DEBEMAIL="noc@dns.icann.org"
+
+
+
+ENTRYPOINT ["/bin/bash"]
