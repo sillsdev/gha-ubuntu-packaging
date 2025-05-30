@@ -6,6 +6,14 @@ ARG ENABLE_LLSO=true
 ARG ENABLE_PSO=true
 FROM --platform=linux/${PLATFORM} ${DISTRIBUTION}:${DIST}
 
+# Make ARGS available to the build environment -
+# see https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
+ARG DIST
+ARG DISTRIBUTION
+ARG PLATFORM
+ARG ENABLE_LLSO
+ARG ENABLE_PSO
+
 # set the environment variables that gha sets
 ENV INPUT_DISTRIBUTION="${DISTRIBUTION}"
 ENV INPUT_DIST="${DIST}"
@@ -17,14 +25,10 @@ ENV INPUT_DEB_FULLNAME="SIL GHA Packager"
 ENV INPUT_DEB_EMAIL="undelivered@sil.org"
 ENV INPUT_PRERELEASE_TAG=""
 
-# see https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
-ARG ENABLE_LLSO
-ARG ENABLE_PSO
-
 # Set the env variables to non-interactive
-ENV DEBIAN_FRONTEND noninteractive
-ENV DEBIAN_PRIORITY critical
-ENV DEBCONF_NOWARNINGS yes
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_PRIORITY=critical
+ENV DEBCONF_NOWARNINGS=yes
 
 # Installing the build environment
 RUN apt-get update && \
