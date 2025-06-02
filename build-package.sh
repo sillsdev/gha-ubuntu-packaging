@@ -38,8 +38,8 @@ endgroup
 # Install build dependencies
 pushd "$BUILD_DIR"
 startgroup "Installing build dependencies"
-retry --times=5 --delay=1 apt update
-retry --times=5 --delay=1 mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
+retry --times=5 --delay=1 -- apt update
+retry --times=5 --delay=1 -- mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
 endgroup
 
 # Build binary package
